@@ -383,9 +383,9 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 
 		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
 		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X")) mode = 0x11;
-		C_PTP (ptp_canon_eos_setremotemode(params, mode));
+        //C_PTP (ptp_canon_eos_setremotemode(params, mode));
 	} else {
-		C_PTP (ptp_canon_eos_setremotemode(params, 1));
+        C_sPTP (ptp_canon_eos_setremotemode(params, 1));
 	}
 	C_PTP (ptp_canon_eos_seteventmode(params, 1));
 	params->eos_camerastatus = -1;	/* aka unknown */
@@ -559,7 +559,16 @@ camera_unprepare_canon_eos_capture(Camera *camera, GPContext *context) {
 
 	/* Drain the rest set of the event data */
 	C_PTP (ptp_check_eos_events (params));
-	C_PTP (ptp_canon_eos_setremotemode(params, 0));
+    // required here as well
+    if (is_canon_eos_m(params)) {
+        int mode = 0x11;	/* default for EOS M and newer Powershot SX */
+
+        if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
+        if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X")) mode = 0x11;
+        //C_PTP (ptp_canon_eos_setremotemode(params, mode));
+    } else {
+        C_PTP (ptp_canon_eos_setremotemode(params, 0));
+    }
 	C_PTP (ptp_canon_eos_seteventmode(params, 0));
 	params->eos_captureenabled = 0;
 	return GP_OK;
