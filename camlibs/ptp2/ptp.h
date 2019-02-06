@@ -3526,7 +3526,7 @@ uint16_t ptp_sony_9281 (PTPParams* params, uint32_t param1);
  * Return values: Some PTP_RC_* code.
  *
  **/
-#define ptp_canon_eos_afcancel(params) ptp_generic_no_data(params,PTP_OC_CANON_EOS_AfCancel,0)
+#define ptp_canon_eos_afcancel(params) int dfjsakfdjoivhawesdvfsdhs= 1; //ptp_generic_no_data(params,PTP_OC_CANON_EOS_AfCancel,0)
 /**
  * ptp_canon_eos_zoom:
  *

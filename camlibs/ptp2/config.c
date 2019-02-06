@@ -379,14 +379,20 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 	GP_LOG_D ("preparing EOS capture...");
 
 	if (is_canon_eos_m(params)) {
-		int mode = 0x15;	/* default for EOS M and newer Powershot SX */
+		int mode = 0x11;	/* default for EOS M and newer Powershot SX */
 
+<<<<<<< HEAD
+		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
+		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X")) mode = 0x11;
+        //C_PTP (ptp_canon_eos_setremotemode(params, mode));
+=======
         if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
         /* G7 X seems to crashe when an extra setremote is done*/
         if (strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X"))
             C_PTP (ptp_canon_eos_setremotemode(params, mode));
+>>>>>>> got G7 X capture to work using a decent implementation
 	} else {
-		C_PTP (ptp_canon_eos_setremotemode(params, 1));
+        C_sPTP (ptp_canon_eos_setremotemode(params, 1));
 	}
 	C_PTP (ptp_canon_eos_seteventmode(params, 1));
 	params->eos_camerastatus = -1;	/* aka unknown */
@@ -543,6 +549,9 @@ camera_unprepare_canon_eos_capture(Camera *camera, GPContext *context) {
 	PTPParams		*params = &camera->pl->params;
 
 	/* just in case we had autofocus running */
+<<<<<<< HEAD
+	//CR (ptp_canon_eos_afcancel(params));
+=======
     /* This and other focus setting are not supported by Canon G7X, the support detection doesn't seem to work */
     if (strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X"))
         CR (ptp_canon_eos_afcancel(params));
@@ -562,9 +571,22 @@ camera_unprepare_canon_eos_capture(Camera *camera, GPContext *context) {
 
 	/* Drain the rest set of the event data */
 	C_PTP (ptp_check_eos_events (params));
+<<<<<<< HEAD
+    // required here as well
+    if (is_canon_eos_m(params)) {
+        int mode = 0x11;	/* default for EOS M and newer Powershot SX */
+
+        if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
+        if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X")) mode = 0x11;
+        //C_PTP (ptp_canon_eos_setremotemode(params, mode));
+    } else {
+        C_PTP (ptp_canon_eos_setremotemode(params, 0));
+    }
+=======
     /* G7 X seems to crashe when an extra setremote is done*/
     if (strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X"))
         C_PTP (ptp_canon_eos_setremotemode(params, 0));
+>>>>>>> got G7 X capture to work using a decent implementation
 	C_PTP (ptp_canon_eos_seteventmode(params, 0));
 	params->eos_captureenabled = 0;
 	return GP_OK;
@@ -5948,7 +5970,7 @@ _put_Canon_EOS_AFDrive(CONFIG_PUT_ARGS) {
 	CR (gp_widget_get_value(widget, &val));
 	if (val)
 		C_PTP (ptp_canon_eos_afdrive (params));
-	else
+	/*else
 		C_PTP (ptp_canon_eos_afcancel (params));
 	/* Get the next set of event data */
 	C_PTP (ptp_check_eos_events (params));
@@ -5969,7 +5991,7 @@ _put_Canon_EOS_AFCancel(CONFIG_PUT_ARGS) {
 	if (!ptp_operation_issupported(params, PTP_OC_CANON_EOS_AfCancel))
 		return (GP_ERROR_NOT_SUPPORTED);
 
-	C_PTP (ptp_canon_eos_afcancel (params));
+	/*C_PTP (ptp_canon_eos_afcancel (params));
 	/* Get the next set of event data */
 	C_PTP (ptp_check_eos_events (params));
 	return GP_OK;
