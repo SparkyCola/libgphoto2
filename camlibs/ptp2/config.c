@@ -379,10 +379,9 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 	GP_LOG_D ("preparing EOS capture...");
 
 	if (is_canon_eos_m(params)) {
-		int mode = 0x11;	/* default for EOS M and newer Powershot SX */
+		int mode = 0x15;	/* default for EOS M and newer Powershot SX */
 
 		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
-		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G7 X")) mode = 0x11;
 		C_PTP (ptp_canon_eos_setremotemode(params, mode));
 	} else {
 		C_PTP (ptp_canon_eos_setremotemode(params, 1));
@@ -542,7 +541,7 @@ camera_unprepare_canon_eos_capture(Camera *camera, GPContext *context) {
 	PTPParams		*params = &camera->pl->params;
 
 	/* just in case we had autofocus running */
-	//CR (ptp_canon_eos_afcancel(params));
+	CR (ptp_canon_eos_afcancel(params));
 
 	if (is_canon_eos_m (params)) {
 		PTPPropertyValue    ct_val;
@@ -5943,7 +5942,7 @@ _put_Canon_EOS_AFDrive(CONFIG_PUT_ARGS) {
 	CR (gp_widget_get_value(widget, &val));
 	if (val)
 		C_PTP (ptp_canon_eos_afdrive (params));
-	/*else
+	else
 		C_PTP (ptp_canon_eos_afcancel (params));
 	/* Get the next set of event data */
 	C_PTP (ptp_check_eos_events (params));
@@ -5964,7 +5963,7 @@ _put_Canon_EOS_AFCancel(CONFIG_PUT_ARGS) {
 	if (!ptp_operation_issupported(params, PTP_OC_CANON_EOS_AfCancel))
 		return (GP_ERROR_NOT_SUPPORTED);
 
-	/*C_PTP (ptp_canon_eos_afcancel (params));
+	C_PTP (ptp_canon_eos_afcancel (params));
 	/* Get the next set of event data */
 	C_PTP (ptp_check_eos_events (params));
 	return GP_OK;
